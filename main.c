@@ -7,9 +7,17 @@
 #include <stdbool.h>
 #define padding 5.99
 #define I8BIT_TO_FLOAT 0.003921569
+#define nMax 4
+#define nMin 1
 char colofblocks[20][10] = {0};
 bool matrixdata[20][10] = {0};
+int iterations=0;
 char locat=0;
+int8_t direction=0;
+int gennum(){
+    int random = rand()%((nMax+1)-nMin) + nMin;
+    return random;
+}
 // i am using unsigned char becuse i only want to use 8 bit numbers and char only uses 8 bits
 unsigned char colors[5][5][3] =
     {{                 // the green box
@@ -121,15 +129,10 @@ void setshape(int x, int y, int shape, int orientation, int color, int value)
 void keyboard(unsigned char key,int x,int y)
 {
     if(key=='a'){
-        if (!(locat==0))
-        {
-            locat--;
-        }
+        direction=-1;
     }
     if(key=='d'){
-        if (!(locat==9)){
-            locat++;
-        }
+        direction=1;
     }
 }
 void refresh(){
@@ -148,20 +151,40 @@ for (int i = 0; i < 20; i++)
 int i=18;
 int tempx=0;
 int tempy=0;
+int col;
+
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT);
+    iterations++;
     if (i>0 && matrixdata[i-1][locat]==0){
     setbox(tempx,tempy, 1,0);
+    if (iterations==10)
+    {
         i--;
-    setbox(locat, i, 1, 1);
+        iterations=0;
+    }
+    if (direction==1 && !(locat==9) && !matrixdata[i][locat+1]==1)
+    {
+        direction=0;
+        locat++;
+    }
+    if (direction==-1 && !(locat==0) && !matrixdata[i][locat-1]==1)
+    {
+        direction=0;
+        locat--;
+    }
+    
+    setbox(locat, i, col, 1);
     tempx=locat;
     tempy=i;
     }
     else{
-    i=20;
-    tempx=0;
-    tempy=20;
+        col=gennum();
+        i=19;
+        tempx=0;
+        tempy=20;
+        locat=0;
     }
     refresh();
     glutSwapBuffers();
@@ -177,10 +200,11 @@ void init()
 void timer(int a)
 {
     glutPostRedisplay();
-    glutTimerFunc(1000/6, timer, 0);
+    glutTimerFunc(1000/130, timer, 0);
 }
 int main(int argc, char **argv)
 {
+    col=gennum();
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
     glutInitWindowSize(250, 500);
