@@ -8,14 +8,25 @@
 #define padding 5.99
 #define I8BIT_TO_FLOAT 0.003921569
 #define nMax 4
-#define nMin 1
-char colofblocks[20][10] = {0};
-bool matrixdata[20][10] = {0};
-int iterations=0;
-char locat=0;
-int8_t direction=0;
-int gennum(){
-    int random = rand()%((nMax+1)-nMin) + nMin;
+#define nMin 0
+#define matrix_width 10
+#define go_down \
+    i--;        \
+    iterations = 0;
+#define go_right   \
+    direction = 0; \
+    locat++;
+#define go_left    \
+    direction = 0; \
+    locat--;
+char colofblocks[20][matrix_width] = {0};
+bool matrixdata[20][matrix_width] = {0};
+int iterations = 0;
+char locat = 0;
+int8_t direction = 0;
+int gennum()
+{
+    int random = rand() % ((nMax + 1) - nMin) + nMin;
     return random;
 }
 // i am using unsigned char becuse i only want to use 8 bit numbers and char only uses 8 bits
@@ -58,6 +69,10 @@ unsigned char colors[5][5][3] =
          {143, 0, 143},   //right
          {205, 0, 205}    //center
      }};
+bool matval(int x , int y )
+{
+    return matrixdata[y][x];
+}
 void renderbox(float x, float y, int size, int color)
 {
     //bottom box
@@ -119,27 +134,30 @@ void setshape(int x, int y, int shape, int orientation, int color, int value)
         }
         if (orientation == 2)
         {
-            setbox(x,y,color,value);
-            setbox(x+1,y,color,value);
-            setbox(x+2,y+1,color,value);
-            setbox(x-1,y+1,color,value);
+            setbox(x, y, color, value);
+            setbox(x + 1, y, color, value);
+            setbox(x + 2, y + 1, color, value);
+            setbox(x - 1, y + 1, color, value);
         }
     }
 }
-void keyboard(unsigned char key,int x,int y)
+void keyboard(unsigned char key, int x, int y)
 {
-    if(key=='a'){
-        direction=-1;
+    if (key == 'a')
+    {
+        direction = -1;
     }
-    if(key=='d'){
-        direction=1;
+    if (key == 'd')
+    {
+        direction = 1;
     }
 }
-void refresh(){
-for (int i = 0; i < 20; i++)
+void refresh()
+{
+    for (int i = 0; i < 20; i++)
     {
-        
-        for (int s = 0; s < 10; s++)
+
+        for (int s = 0; s < matrix_width; s++)
         {
             if (matrixdata[i][s] == 1)
             {
@@ -148,44 +166,146 @@ for (int i = 0; i < 20; i++)
         }
     }
 }
-int i=18;
-int tempx=0;
-int tempy=0;
-int col;
+int i = 18;
+int tempx = 0;
+int tempy = 0;
+int col=0;
+void displaybox(int shape, int orientation)
+{
+    
+    //                            ⬜
+    //                          ⬜⬜⬜
+    if (shape == 1)
+    {
+        //                            ⬜
+        //                          ⬜⬜⬜
+        if (orientation == 1)
+        {
+
+            if (i > 0 && matrixdata[i - 1][locat] == 0 && matrixdata[i - 1][locat + 1] == 0 && matrixdata[i - 1][locat + 2] == 0)
+            {
+                iterations++;
+                setbox(tempx, tempy, col, 0);
+                setbox(tempx + 1, tempy, col, 0);
+                setbox(tempx + 2, tempy, col, 0);
+                setbox(tempx + 1, tempy + 1, col, 0);
+                if (iterations == 10)
+                {
+                    go_down;
+                }
+                if (direction == 1 && !(locat == matrix_width - 3) && !matrixdata[i][locat + 3] == 1 && !matrixdata[i + 1][locat + 2] == 1)
+                {
+                    go_right;
+                }
+                if (direction == -1 && !(locat == 0) && !matrixdata[i][locat - 1] == 1 && !matrixdata[i + 1][locat] == 1)
+                {
+                    go_left;
+                }
+
+                setbox(locat, i, col, 1);
+                setbox(locat + 1, i, col, 1);
+                setbox(locat + 2, i, col, 1);
+                setbox(locat + 1, i + 1, col, 1);
+                tempx = locat;
+                tempy = i;
+            }
+            else
+            {
+                i = 19;
+                col = gennum();
+                tempx = 0;
+                tempy = 20;
+                locat = 0;
+            }
+        }
+        //                            ⬜
+        //                            ⬜⬜
+        //                            ⬜
+        if (orientation == 2)
+        {
+            if (i > 0 && matrixdata[i - 1][locat] == 0 && matrixdata[i][locat+1] == 0)
+            {
+                iterations++;
+                setbox(tempx, tempy, col, 0);
+                setbox(tempx + 1, tempy + 1, col, 0);
+                setbox(tempx, tempy + 1, col, 0);
+                setbox(tempx, tempy + 2, col, 0);
+                if (iterations == 10)
+                {
+                    go_down;
+                }
+                if (direction == 1 && !(locat == matrix_width - 2) && !matrixdata[i+1][locat + 2] == 1 && !matrixdata[i][locat + 1] == 1 && !matrixdata[i+1][locat + 1] == 1)
+                {
+                    go_right;
+                }
+                if (direction == -1 && !(locat == 0) && !matrixdata[i][locat - 1] == 1 && !matrixdata[i + 1][locat -1] == 1 && !matrixdata[i + 2][locat -1] == 1)
+                {
+                    go_left;
+                }
+                setbox(locat, i, col, 1);
+                setbox(locat + 1, i + 1, col, 1);
+                setbox(locat, i + 1, col, 1);
+                setbox(locat, i + 2, col, 1);
+                tempx = locat;
+                tempy = i;
+            }
+            else
+            {
+                col = gennum();
+                i = 17;
+                tempx = 0;
+                tempy = 20;
+                locat = 0;
+            }
+        }
+        //                          ⬜⬜⬜
+        //                            ⬜
+        if (orientation == 3)
+        {
+
+            if (i > 0 && matrixdata[i][locat] == 0 && matrixdata[i - 1][locat + 1] == 0 && matrixdata[i][locat + 2] == 0)
+            {
+                iterations++;
+                setbox(tempx, tempy+1, col, 0);
+                setbox(tempx + 1, tempy + 1, col, 0);
+                setbox(tempx + 2, tempy+1, col, 0);
+                setbox(tempx + 1, tempy, col, 0);
+                if (iterations == 10)
+                {
+                    go_down;
+                }
+                if (direction == 1 && !(locat == matrix_width - 3) && !matrixdata[i][locat+2] == 1 && !matrixdata[i + 1][locat + 3] == 1)
+                {
+                    go_right;
+                }
+                if (direction == -1 && !(locat == 0) && !matrixdata[i][locat - 1] == 1 && !matrixdata[i + 1][locat] == 1)
+                {
+                    go_left;
+                }
+                setbox(locat, i+1, col, 1);
+                setbox(locat + 1, i + 1, col, 1);
+                setbox(locat + 2, i+1, col, 1);
+                setbox(locat + 1, i, col, 1);
+                
+                tempx = locat;
+                tempy = i;
+            }
+            else
+            {
+                i = 18;
+                col = gennum();
+                tempx = 0;
+                tempy = 18;
+                locat = 0;
+            }
+        }
+    }
+}
 
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    iterations++;
-    if (i>0 && matrixdata[i-1][locat]==0){
-    setbox(tempx,tempy, 1,0);
-    if (iterations==10)
-    {
-        i--;
-        iterations=0;
-    }
-    if (direction==1 && !(locat==9) && !matrixdata[i][locat+1]==1)
-    {
-        direction=0;
-        locat++;
-    }
-    if (direction==-1 && !(locat==0) && !matrixdata[i][locat-1]==1)
-    {
-        direction=0;
-        locat--;
-    }
-    
-    setbox(locat, i, col, 1);
-    tempx=locat;
-    tempy=i;
-    }
-    else{
-        col=gennum();
-        i=19;
-        tempx=0;
-        tempy=20;
-        locat=0;
-    }
+    displaybox(1, 3);
     refresh();
     glutSwapBuffers();
 }
@@ -195,21 +315,21 @@ void init()
     glColor3f(1.0, 1.0, 1.0);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluOrtho2D(0, 50, 0, 100);
+    gluOrtho2D(0, 5 * matrix_width, 0, 100);
 }
 void timer(int a)
 {
     glutPostRedisplay();
-    glutTimerFunc(1000/130, timer, 0);
+    glutTimerFunc(1000 / 130, timer, 0);
 }
 int main(int argc, char **argv)
 {
-    col=gennum();
+    col = gennum();
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
-    glutInitWindowSize(250, 500);
-    glutInitWindowPosition(0, 0);
-    glutCreateWindow("simple");
+    glutInitWindowSize(matrix_width * 25, 500);
+    glutInitWindowPosition(500, 100);
+    glutCreateWindow("Tetris");
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
     glutTimerFunc(0, timer, 0);
