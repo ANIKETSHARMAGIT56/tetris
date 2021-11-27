@@ -211,6 +211,7 @@ void displaybox(int shape, int orientation)
             }
             else
             {
+                
                 i = 19;
                 col = gennum();
                 tempx = 0;
