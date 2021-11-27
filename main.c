@@ -182,7 +182,7 @@ void displaybox(int shape, int orientation)
         if (orientation == 1)
         {
 
-            if (i > 0 && matrixdata[i - 1][locat] == 0 && matrixdata[i - 1][locat + 1] == 0 && matrixdata[i - 1][locat + 2] == 0)
+            if (i > 0 && matval(locat,i - 1) == 0 && matval(locat + 1,i - 1) == 0 && matval(locat + 2,i - 1) == 0)
             {
                 iterations++;
                 setbox(tempx, tempy, col, 0);
@@ -193,11 +193,11 @@ void displaybox(int shape, int orientation)
                 {
                     go_down;
                 }
-                if (direction == 1 && !(locat == matrix_width - 3) && !matrixdata[i][locat + 3] == 1 && !matrixdata[i + 1][locat + 2] == 1)
+                if (direction == 1 && !(locat == matrix_width - 3) && !matval(locat + 3,i) == 1 && !matval(locat + 2,i + 1) == 1)
                 {
                     go_right;
                 }
-                if (direction == -1 && !(locat == 0) && !matrixdata[i][locat - 1] == 1 && !matrixdata[i + 1][locat] == 1)
+                if (direction == -1 && !(locat == 0) && !matval(locat - 1,i) == 1 && !matval(locat,i + 1) == 1)
                 {
                     go_left;
                 }
@@ -223,7 +223,7 @@ void displaybox(int shape, int orientation)
         //                            ⬜
         if (orientation == 2)
         {
-            if (i > 0 && matrixdata[i - 1][locat] == 0 && matrixdata[i][locat+1] == 0)
+            if (i > 0 && matval(locat,i - 1) == 0 && matval(locat+1,i) == 0)
             {
                 iterations++;
                 setbox(tempx, tempy, col, 0);
@@ -234,11 +234,11 @@ void displaybox(int shape, int orientation)
                 {
                     go_down;
                 }
-                if (direction == 1 && !(locat == matrix_width - 2) && !matrixdata[i+1][locat + 2] == 1 && !matrixdata[i][locat + 1] == 1 && !matrixdata[i+1][locat + 1] == 1)
+                if (direction == 1 && !(locat == matrix_width - 2) && !matval(locat + 2,i+1) == 1 && !matval(locat + 1,i) == 1 && !matval(locat + 1,i+1) == 1)
                 {
                     go_right;
                 }
-                if (direction == -1 && !(locat == 0) && !matrixdata[i][locat - 1] == 1 && !matrixdata[i + 1][locat -1] == 1 && !matrixdata[i + 2][locat -1] == 1)
+                if (direction == -1 && !(locat == 0) && !matval(locat - 1,i) == 1 && !matval(locat -1,i + 1) == 1 && !matval(locat -1,i + 2) == 1)
                 {
                     go_left;
                 }
@@ -263,7 +263,7 @@ void displaybox(int shape, int orientation)
         if (orientation == 3)
         {
 
-            if (i > 0 && matrixdata[i][locat] == 0 && matrixdata[i - 1][locat + 1] == 0 && matrixdata[i][locat + 2] == 0)
+            if (i > 0 && matval(locat,i) == 0 && matval(locat + 1,i - 1) == 0 && matval(locat + 2,i) == 0)
             {
                 iterations++;
                 setbox(tempx, tempy+1, col, 0);
@@ -274,11 +274,11 @@ void displaybox(int shape, int orientation)
                 {
                     go_down;
                 }
-                if (direction == 1 && !(locat == matrix_width - 3) && !matrixdata[i][locat+2] == 1 && !matrixdata[i + 1][locat + 3] == 1)
+                if (direction == 1 && !(locat == matrix_width - 3) && !matval(locat+2,i) == 1 && !matval(locat + 3,i+1) == 1)
                 {
                     go_right;
                 }
-                if (direction == -1 && !(locat == 0) && !matrixdata[i][locat - 1] == 1 && !matrixdata[i + 1][locat] == 1)
+                if (direction == -1 && !(locat == 0) && !matval(locat - 1,i) == 1 && !matval(locat,i + 1) == 1)
                 {
                     go_left;
                 }
@@ -301,11 +301,10 @@ void displaybox(int shape, int orientation)
         }
     }
 }
-
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    displaybox(1, 3);
+    displaybox(1, 2);
     refresh();
     glutSwapBuffers();
 }
