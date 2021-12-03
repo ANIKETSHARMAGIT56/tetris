@@ -1,3 +1,3 @@
 all:    #target name
-	g++ main.c -o test -lglut -lGL -lGLU
-	./test
+	g++ main.c -o tetris -lglut -lGL -lGLU
+	./tetris

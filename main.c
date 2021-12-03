@@ -9,7 +9,8 @@
 #define I8BIT_TO_FLOAT 0.003921569
 #define nMax 4
 #define nMin 0
-#define matrix_width 10
+#define gametickspeed 7
+#define matrix_width 9
 #define go_down \
     i--;        \
     iterations = 0;
@@ -19,11 +20,17 @@
 #define go_left    \
     direction = 0; \
     locat--;
+#define resetit     \
+    col = gennum(); \
+    tempx = 0;      \
+    tempy = 20;     \
+    locat = 0;
 char colofblocks[20][matrix_width] = {0};
 bool matrixdata[20][matrix_width] = {0};
 int iterations = 0;
 char locat = 0;
 int8_t direction = 0;
+bool resetsignal = 1;
 int gennum()
 {
     int random = rand() % ((nMax + 1) - nMin) + nMin;
@@ -69,7 +76,7 @@ unsigned char colors[5][5][3] =
          {143, 0, 143},   //right
          {205, 0, 205}    //center
      }};
-bool matval(int x , int y )
+bool matval(int x, int y)
 {
     return matrixdata[y][x];
 }
@@ -143,11 +150,11 @@ void setshape(int x, int y, int shape, int orientation, int color, int value)
 }
 void keyboard(unsigned char key, int x, int y)
 {
-    if (key == 'a')
+    if (key == 'a' | key == 'A')
     {
         direction = -1;
     }
-    if (key == 'd')
+    if (key == 'd' | key == 'D')
     {
         direction = 1;
     }
@@ -169,10 +176,10 @@ void refresh()
 int i = 18;
 int tempx = 0;
 int tempy = 0;
-int col=0;
+int col = 0;
 void displaybox(int shape, int orientation)
 {
-    
+
     //                            ⬜
     //                          ⬜⬜⬜
     if (shape == 1)
@@ -181,8 +188,13 @@ void displaybox(int shape, int orientation)
         //                          ⬜⬜⬜
         if (orientation == 1)
         {
+            if(resetsignal==1)
+            {
+                i=18;
+                resetsignal=0;
+            }
 
-            if (i > 0 && matval(locat,i - 1) == 0 && matval(locat + 1,i - 1) == 0 && matval(locat + 2,i - 1) == 0)
+            if (i > 0 && matval(locat, i - 1) == 0 && matval(locat + 1, i - 1) == 0 && matval(locat + 2, i - 1) == 0)
             {
                 iterations++;
                 setbox(tempx, tempy, col, 0);
@@ -193,11 +205,11 @@ void displaybox(int shape, int orientation)
                 {
                     go_down;
                 }
-                if (direction == 1 && !(locat == matrix_width - 3) && !matval(locat + 3,i) == 1 && !matval(locat + 2,i + 1) == 1)
+                if (direction == 1 && !(locat == matrix_width - 3) && !matval(locat + 3, i) == 1 && !matval(locat + 2, i + 1) == 1)
                 {
                     go_right;
                 }
-                if (direction == -1 && !(locat == 0) && !matval(locat - 1,i) == 1 && !matval(locat,i + 1) == 1)
+                if (direction == -1 && !(locat == 0) && !matval(locat - 1, i) == 1 && !matval(locat, i + 1) == 1)
                 {
                     go_left;
                 }
@@ -211,12 +223,8 @@ void displaybox(int shape, int orientation)
             }
             else
             {
-                
-                i = 19;
-                col = gennum();
-                tempx = 0;
-                tempy = 20;
-                locat = 0;
+                resetsignal=1;
+                resetit;
             }
         }
         //                            ⬜
@@ -224,22 +232,27 @@ void displaybox(int shape, int orientation)
         //                            ⬜
         if (orientation == 2)
         {
-            if (i > 0 && matval(locat,i - 1) == 0 && matval(locat+1,i) == 0)
+            if(resetsignal==1)
+            {
+                i=17;
+                resetsignal=0;
+            }
+            if (i > 0 && matval(locat, i - 1) == 0 && matval(locat + 1, i) == 0)
             {
                 iterations++;
                 setbox(tempx, tempy, col, 0);
                 setbox(tempx + 1, tempy + 1, col, 0);
                 setbox(tempx, tempy + 1, col, 0);
                 setbox(tempx, tempy + 2, col, 0);
-                if (iterations == 10)
+                if (iterations == gametickspeed)
                 {
                     go_down;
                 }
-                if (direction == 1 && !(locat == matrix_width - 2) && !matval(locat + 2,i+1) == 1 && !matval(locat + 1,i) == 1 && !matval(locat + 1,i+1) == 1)
+                if (direction == 1 && !(locat == matrix_width - 2) && !matval(locat + 2, i + 1) == 1 && !matval(locat + 1, i) == 1 && !matval(locat + 1, i + 1) == 1)
                 {
                     go_right;
                 }
-                if (direction == -1 && !(locat == 0) && !matval(locat - 1,i) == 1 && !matval(locat -1,i + 1) == 1 && !matval(locat -1,i + 2) == 1)
+                if (direction == -1 && !(locat == 0) && !matval(locat - 1, i) == 1 && !matval(locat - 1, i + 1) == 1 && !matval(locat - 1, i + 2) == 1)
                 {
                     go_left;
                 }
@@ -252,60 +265,101 @@ void displaybox(int shape, int orientation)
             }
             else
             {
-                col = gennum();
-                i = 17;
-                tempx = 0;
-                tempy = 20;
-                locat = 0;
+                resetsignal=1;
+                resetit;
             }
         }
         //                          ⬜⬜⬜
         //                            ⬜
         if (orientation == 3)
         {
-
-            if (i > 0 && matval(locat,i) == 0 && matval(locat + 1,i - 1) == 0 && matval(locat + 2,i) == 0)
+            if(resetsignal==1)
+            {
+                i=18;
+                resetsignal=0;
+            }
+            if (i > 0 && matval(locat, i) == 0 && matval(locat + 1, i - 1) == 0 && matval(locat + 2, i) == 0)
             {
                 iterations++;
-                setbox(tempx, tempy+1, col, 0);
+                setbox(tempx, tempy + 1, col, 0);
                 setbox(tempx + 1, tempy + 1, col, 0);
-                setbox(tempx + 2, tempy+1, col, 0);
+                setbox(tempx + 2, tempy + 1, col, 0);
                 setbox(tempx + 1, tempy, col, 0);
-                if (iterations == 10)
+                if (iterations == gametickspeed)
                 {
                     go_down;
                 }
-                if (direction == 1 && !(locat == matrix_width - 3) && !matval(locat+2,i) == 1 && !matval(locat + 3,i+1) == 1)
+                if (direction == 1 && !(locat == matrix_width - 3) && !matval(locat + 2, i) == 1 && !matval(locat + 3, i + 1) == 1)
                 {
                     go_right;
                 }
-                if (direction == -1 && !(locat == 0) && !matval(locat - 1,i) == 1 && !matval(locat,i + 1) == 1)
+                if (direction == -1 && !(locat == 0) && !matval(locat - 1, i) == 1 && !matval(locat, i + 1) == 1)
                 {
                     go_left;
                 }
-                setbox(locat, i+1, col, 1);
+                setbox(locat, i + 1, col, 1);
                 setbox(locat + 1, i + 1, col, 1);
-                setbox(locat + 2, i+1, col, 1);
+                setbox(locat + 2, i + 1, col, 1);
                 setbox(locat + 1, i, col, 1);
-                
+
                 tempx = locat;
                 tempy = i;
             }
             else
             {
-                i = 18;
-                col = gennum();
-                tempx = 0;
-                tempy = 18;
-                locat = 0;
+                resetsignal=1;
+                resetit;
             }
         }
+        //                            ⬜
+        //                          ⬜⬜
+        //                            ⬜
+        if (orientation == 3)
+        {
+            if(resetsignal==1)
+            {
+                i=17;
+                resetsignal=0;
+            }
+            if (i > 0 && matval(locat, i - 1) == 0 && matval(locat + 1, i) == 0)
+            {
+                iterations++;
+                setbox(tempx, tempy, col, 0);
+                setbox(tempx + 1, tempy + 1, col, 0);
+                setbox(tempx, tempy + 1, col, 0);
+                setbox(tempx, tempy + 2, col, 0);
+                if (iterations == gametickspeed)
+                {
+                    go_down;
+                }
+                if (direction == 1 && !(locat == matrix_width - 2) && !matval(locat + 2, i + 1) == 1 && !matval(locat + 1, i) == 1 && !matval(locat + 1, i + 1) == 1)
+                {
+                    go_right;
+                }
+                if (direction == -1 && !(locat == 0) && !matval(locat - 1, i) == 1 && !matval(locat - 1, i + 1) == 1 && !matval(locat - 1, i + 2) == 1)
+                {
+                    go_left;
+                }
+                setbox(locat, i, col, 1);
+                setbox(locat + 1, i + 1, col, 1);
+                setbox(locat, i + 1, col, 1);
+                setbox(locat, i + 2, col, 1);
+                tempx = locat;
+                tempy = i;
+            }
+            else
+            {
+                resetsignal=1;
+                resetit;
+            }
+        }
+    
     }
 }
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    displaybox(1, 2);
+    displaybox(1, 3);
     refresh();
     glutSwapBuffers();
 }
