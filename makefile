@@ -1,3 +1,3 @@
-all:    #target name
-	g++ main.c -o tetris -lglut -lGL -lGLU
-	./tetris
+all:
+	g++ src/main.c -o binaries/tetris -lglut -lGL -lGLU
+	./binaries/tetris
