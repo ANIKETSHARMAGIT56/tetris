@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <GL/glut.h>
 #include <stdbool.h>
+#include <unistd.h>
 #include "../include/coordinates.h"
 #define padding 5.99
 #define I8BIT_TO_FLOAT 0.003921569
@@ -31,6 +32,138 @@ bool orichangesignal=0;
 int orival=3;
 int elsepart = 0;
 int colit;
+char shapes[][4][4][2] = {
+    {
+        //shape 1
+        {
+            //    ⬜
+            //  ⬜⬜⬜
+            {0, 0}, {1, 0}, {2, 0}, {1, 1}
+        },
+        {
+            //    ⬜
+            //    ⬜⬜
+            //    ⬜
+
+            {0, 0}, {1, 1}, {0 ,1}, {0, 2}
+        },
+        {
+            //   ⬜⬜⬜
+            //     ⬜
+
+            {1, 0}, {0, 1}, {1 ,1}, {2, 1}
+        },
+        {
+            //    ⬜
+            //  ⬜⬜
+            //    ⬜
+
+            {0, 1}, {1, 0}, {1 ,1}, {1, 2}
+        }
+    },
+    {
+        //shape 2
+        {
+            //    ⬜⬜
+            //      ⬜⬜
+            //    
+            {0,1},{1,1},{1,0},{2,0}
+        },
+        {
+            //      ⬜
+            //    ⬜⬜
+            //    ⬜
+            {0,0},{0,1},{1,1},{1,2}
+        },
+        {
+            //    ⬜⬜
+            //      ⬜⬜
+            //    
+            {0,1},{1,1},{1,0},{2,0}
+        },
+        {
+            //      ⬜
+            //    ⬜⬜
+            //    ⬜
+            {0,0},{0,1},{1,1},{1,2}
+        },
+    },
+    {
+        //shape 3
+        {
+            //      ⬜⬜
+            //    ⬜⬜
+            //    
+            {0,0},{1,0},{1,1},{2,1}
+        },
+        {
+            //    ⬜
+            //    ⬜⬜
+            //      ⬜
+            {0,1},{1,1},{1,0},{0,2}
+        },
+        {
+            //      ⬜⬜
+            //    ⬜⬜
+            //    
+            {0,0},{1,0},{1,1},{2,1}
+        },
+        {
+            //    ⬜
+            //    ⬜⬜
+            //      ⬜
+            {0,1},{1,1},{1,0},{0,2}
+        },
+    },
+    {
+        {
+            //    ⬜⬜
+            //    ⬜⬜
+            {0,0},{0,1},{1,1},{1,0}
+        },
+        {
+            //    ⬜⬜
+            //    ⬜⬜
+            {0,0},{0,1},{1,1},{1,0}
+        },
+        {
+            //    ⬜⬜
+            //    ⬜⬜
+            {0,0},{0,1},{1,1},{1,0}
+        },
+        {
+            //    ⬜⬜
+            //    ⬜⬜
+            {0,0},{0,1},{1,1},{1,0}
+        },
+    },
+    {
+        // shape 4
+        {
+            //    ⬜
+            //    ⬜
+            //    ⬜
+            //    ⬜
+            {0,0},{0,1},{0,2},{0,3},
+        },
+        {
+            //    ⬜⬜⬜⬜
+            {0,0},{1,0},{2,0},{3,0},
+        },
+        {
+            //    ⬜
+            //    ⬜
+            //    ⬜
+            //    ⬜
+            {0,0},{0,1},{0,2},{0,3},
+        },
+        {
+            //    ⬜⬜⬜⬜
+
+            {0,0},{1,0},{2,0},{3,0},
+        }
+    }
+};
 int max(int al, int bl, int cl, int dl)  
 {
     int a=al;
@@ -173,6 +306,19 @@ void renderbox(float x, float y, int size, int color)
     glVertex2f(x + size - size / padding, y + size / padding);
     glEnd();
 }
+void renderblank(float x, float y,int size){
+    glBegin(GL_LINES);
+    glColor3f(0.1,0.1,0.1);
+    glVertex2f(x ,y);
+    glVertex2f(x + size, y);
+    glVertex2f(x + size, y);
+    glVertex2f(x + size, y + size);
+    glVertex2f(x + size, y + size);
+    glVertex2f(x , y + size);
+    glVertex2f(x , y + size);
+    glVertex2f(x , y);
+    glEnd();
+}
 void setbox(int x, int y, int color, bool value)
 {
     matrixdata[y][x] = value;
@@ -192,6 +338,11 @@ void keyboard(unsigned char key, int x, int y)
     {
         orichangesignal=1;
     }
+    if (key == '\t')
+    {
+        exit(0);
+    }
+    
 }
 void refresh()
 {
@@ -204,9 +355,14 @@ void refresh()
             {
                 renderbox(s * 5, i * 5, 5, colofblocks[i][s]);
             }
+            if (matrixdata[i][s] == 0)
+            {
+                renderblank(s * 5, i * 5, 5);
+            }
         }
     }
 }
+int isfull;
 int i = 18;
 int tempx = 0;
 int tempy = 0;
@@ -237,6 +393,8 @@ int colldownfunc(int shape ,int orientation ,int box ,int xy)
 }
 void displayshape(int shape)
 {
+    int isfull2=0;
+    static int downsteps;
     if (resetsignal == 1)
     {
         i = 17;
@@ -261,8 +419,8 @@ void displayshape(int shape)
         )
         {
             go_down;
-            printf("%d\n",col);
-            }
+            downsteps++;
+        }
         }
         if (!(
            matval(locat + shapes[shape - 1][orival - 1][0][0], i + shapes[shape - 1][orival - 1][0][1]-1) == 0
@@ -326,14 +484,67 @@ void displayshape(int shape)
         if (elsepart==1)
         {
             elsepart=0;
+            tempx = locat;
+            tempy = i;
             goto label;
         }
         tempx = locat;
         tempy = i;
     }
     else
-    {
+    {   
         label:
+        if (downsteps==1)
+        {
+            exit(0);
+        }
+        if (!downsteps==0)
+        {
+            downsteps=0;
+        }
+        tempx = locat;
+        tempy = i;
+        int isfull=0;
+        for (int l = 0; l < 4; l++)
+        {
+        
+        for (int y = 0; y < 20; y++)
+        {
+            for (int x = 0; x < matrix_width; x++)
+            {
+                if (matval(x,y)==1)
+                {
+                    isfull=1;
+                }
+                if (matval(x,y)==0)
+                {
+                    isfull=0;
+                    break;
+                }
+            }
+            if (isfull==1)
+            {
+                for (int q = 0; q < matrix_width; q++)
+                {
+                    matrixdata[y][q]=0;
+                }
+                for (int yp = y; yp < 19; yp++)
+                {
+                    for (int xp = 0; xp < matrix_width; xp++)
+                    {
+                        matrixdata[yp][xp]=matrixdata[yp+1][xp];
+                        colofblocks[yp][xp]=colofblocks[yp+1][xp];
+                        refresh();
+                    }
+                    
+                }
+                
+            }
+            
+        }
+        }
+        
+        isfull=0;
         if (col>=4)
         {
             col=0;
@@ -350,7 +561,7 @@ void displayshape(int shape)
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    displayshape(1);
+    displayshape(5);
     refresh();
     glutSwapBuffers();
 }
