@@ -2,13 +2,15 @@
 #include <GL/glut.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <time.h>
 #include "../include/coordinates.h"
 #define padding 5.99
 #define I8BIT_TO_FLOAT 0.003921569
-#define nMax 4
-#define nMin 0
+#define nMax 5
+#define nMin 1
 #define gametickspeed 10
 #define matrix_width 10
+int shapenumber;
 #define go_down \
     i--;        \
     iterations = 0;
@@ -32,6 +34,9 @@ bool orichangesignal=0;
 int orival=3;
 int elsepart = 0;
 int colit;
+int gennum(){
+    return rand()%((nMax+1)-nMin) + nMin;
+}
 char shapes[][4][4][2] = {
     {
         //shape 1
@@ -391,8 +396,9 @@ int colldownfunc(int shape ,int orientation ,int box ,int xy)
         }
     }
 }
-void displayshape(int shape)
+void displayshape()
 {
+    int shape=shapenumber;
     int isfull2=0;
     static int downsteps;
     if (resetsignal == 1)
@@ -554,6 +560,7 @@ void displayshape(int shape)
             col++;
         }
         resetsignal = 1;
+        shapenumber=gennum();
         resetit;
         
     }
@@ -561,7 +568,7 @@ void displayshape(int shape)
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    displayshape(5);
+    displayshape();
     refresh();
     glutSwapBuffers();
 }
@@ -580,6 +587,8 @@ void timer(int a)
 }
 int main(int argc, char **argv)
 {
+    srand(time(NULL));
+    shapenumber=gennum();
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
     glutInitWindowSize(matrix_width * 25, 500);
