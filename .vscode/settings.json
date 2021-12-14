@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "*.inc": "c",
+        "stdbool.h": "c",
+        "time.h": "c",
+        "unistd.h": "c",
+        "coordinates.h": "c"
+    }
+}

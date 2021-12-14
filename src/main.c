@@ -1,8 +1,4 @@
-#include <unistd.h>
-#include <math.h>
-#include <time.h>
 #include <stdio.h>
-#include <sys/time.h>
 #include <GL/glut.h>
 #include <stdbool.h>
 #include "../include/coordinates.h"
@@ -10,7 +6,7 @@
 #define I8BIT_TO_FLOAT 0.003921569
 #define nMax 4
 #define nMin 0
-#define gametickspeed 7
+#define gametickspeed 10
 #define matrix_width 10
 #define go_down \
     i--;        \
@@ -22,7 +18,6 @@
     direction = 0; \
     locat--;
 #define resetit     \
-    col = gennum(); \
     tempx = 0;      \
     tempy = 20;     \
     locat = 5;
@@ -33,13 +28,9 @@ char locat = 0;
 int8_t direction = 0;
 bool resetsignal = 1;
 bool orichangesignal=0;
-int orival=2;
-int gennum()
-{
-    int random = rand() % ((nMax + 1) - nMin) + nMin;
-    return random;
-}
-
+int orival=3;
+int elsepart = 0;
+int colit;
 int max(int al, int bl, int cl, int dl)  
 {
     int a=al;
@@ -87,6 +78,7 @@ int max(int al, int bl, int cl, int dl)
         return d;  
     }
 }
+
 // i am using unsigned char becuse i only want to use 8 bit numbers and char only uses 8 bits
 unsigned char colors[5][5][3] =
     {{                 // the green box
@@ -250,13 +242,9 @@ void displayshape(int shape)
         i = 17;
         resetsignal = 0;
     }
-    if (i > 0 
-    && matval(locat + colldown[shape - 1][orival - 1][0][0], i + colldown[shape - 1][orival - 1][0][1]) == 0
-    && matval(locat + colldown[shape - 1][orival - 1][1][0], i + colldown[shape - 1][orival - 1][1][1]) == 0
-    && matval(locat + colldown[shape - 1][orival - 1][2][0], i + colldown[shape - 1][orival - 1][2][1]) == 0
-    && matval(locat + colldown[shape - 1][orival - 1][3][0], i + colldown[shape - 1][orival - 1][3][1]) == 0
-    )
+    if (i > 0)
     {
+        
         iterations++;
         for (int n = 0; n < 4; n++)
         {
@@ -264,20 +252,39 @@ void displayshape(int shape)
             
         }
         
-        if (iterations == 10)
+        if (iterations == gametickspeed){
+        if (
+        matval(locat + shapes[shape - 1][orival - 1][0][0], i + shapes[shape - 1][orival - 1][0][1]-1) == 0
+        && matval(locat + shapes[shape - 1][orival - 1][1][0], i + shapes[shape - 1][orival - 1][1][1]-1) == 0
+        && matval(locat + shapes[shape - 1][orival - 1][2][0], i + shapes[shape - 1][orival - 1][2][1]-1) == 0
+        && matval(locat + shapes[shape - 1][orival - 1][3][0], i + shapes[shape - 1][orival - 1][3][1]-1) == 0
+        )
         {
             go_down;
+            printf("%d\n",col);
+            }
+        }
+        if (!(
+           matval(locat + shapes[shape - 1][orival - 1][0][0], i + shapes[shape - 1][orival - 1][0][1]-1) == 0
+        && matval(locat + shapes[shape - 1][orival - 1][1][0], i + shapes[shape - 1][orival - 1][1][1]-1) == 0
+        && matval(locat + shapes[shape - 1][orival - 1][2][0], i + shapes[shape - 1][orival - 1][2][1]-1) == 0
+        && matval(locat + shapes[shape - 1][orival - 1][3][0], i + shapes[shape - 1][orival - 1][3][1]-1) == 0
+        ))
+        {
+            elsepart = 1;
+            goto label2;
         }
         if (direction == 1 
-        && !(locat == matrix_width - collright[shape - 1][orival - 1][0][0])
-        && !(locat == matrix_width - collright[shape - 1][orival - 1][1][0])
-        && !(locat == matrix_width - collright[shape - 1][orival - 1][2][0])
-        && !(locat == matrix_width - collright[shape - 1][orival - 1][3][0])
-        && matval(locat + collright[shape - 1][orival - 1][0][0], i + collright[shape - 1][orival - 1][0][1]) == 0
-        && matval(locat + collright[shape - 1][orival - 1][1][0], i + collright[shape - 1][orival - 1][1][1]) == 0
-        && matval(locat + collright[shape - 1][orival - 1][2][0], i + collright[shape - 1][orival - 1][2][1]) == 0
-        && matval(locat + collright[shape - 1][orival - 1][3][0], i + collright[shape - 1][orival - 1][3][1]) == 0)
+        && !(locat == matrix_width - shapes[shape - 1][orival - 1][0][0]-1)
+        && !(locat == matrix_width - shapes[shape - 1][orival - 1][1][0]-1)
+        && !(locat == matrix_width - shapes[shape - 1][orival - 1][2][0]-1)
+        && !(locat == matrix_width - shapes[shape - 1][orival - 1][3][0]-1)
+        && matval(locat + shapes[shape - 1][orival - 1][0][0]+1, i + shapes[shape - 1][orival - 1][0][1]) == 0
+        && matval(locat + shapes[shape - 1][orival - 1][1][0]+1, i + shapes[shape - 1][orival - 1][1][1]) == 0
+        && matval(locat + shapes[shape - 1][orival - 1][2][0]+1, i + shapes[shape - 1][orival - 1][2][1]) == 0
+        && matval(locat + shapes[shape - 1][orival - 1][3][0]+1, i + shapes[shape - 1][orival - 1][3][1]) == 0)
         {
+
             go_right;
         }
         if (orichangesignal==1)
@@ -289,30 +296,55 @@ void displayshape(int shape)
             }
             if (orival==2)
             {
+                p=3;
+            }
+            if (orival==3)
+            {
+                p=4;
+            }
+            if (orival==4)
+            {
                 p=1;
             }
             orival=p;
             orichangesignal=0;
         }
         if (direction == -1 && !(locat == 0)
-        && matval(locat + collleft[shape - 1][orival - 1][0][0], i + collleft[shape - 1][orival - 1][0][1]) == 0
-        && matval(locat + collleft[shape - 1][orival - 1][1][0], i + collleft[shape - 1][orival - 1][1][1]) == 0
-        && matval(locat + collleft[shape - 1][orival - 1][2][0], i + collleft[shape - 1][orival - 1][2][1]) == 0
-        && matval(locat + collleft[shape - 1][orival - 1][3][0], i + collleft[shape - 1][orival - 1][3][1]) == 0)
+        && matval(locat + shapes[shape - 1][orival - 1][0][0]-1, i + shapes[shape - 1][orival - 1][0][1]) == 0
+        && matval(locat + shapes[shape - 1][orival - 1][1][0]-1, i + shapes[shape - 1][orival - 1][1][1]) == 0
+        && matval(locat + shapes[shape - 1][orival - 1][2][0]-1, i + shapes[shape - 1][orival - 1][2][1]) == 0
+        && matval(locat + shapes[shape - 1][orival - 1][3][0]-1, i + shapes[shape - 1][orival - 1][3][1]) == 0
+        )
         {
             go_left;
         }
+        label2:
         for (int n = 0; n < 4; n++)
         {
             setbox(locat + shapes[shape - 1][orival - 1][n][0], i + shapes[shape - 1][orival - 1][n][1], col, 1);
+        }
+        if (elsepart==1)
+        {
+            elsepart=0;
+            goto label;
         }
         tempx = locat;
         tempy = i;
     }
     else
     {
+        label:
+        if (col>=4)
+        {
+            col=0;
+        }
+        else
+        {
+            col++;
+        }
         resetsignal = 1;
         resetit;
+        
     }
 }
 void display(void)
@@ -337,7 +369,6 @@ void timer(int a)
 }
 int main(int argc, char **argv)
 {
-    col = gennum();
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
     glutInitWindowSize(matrix_width * 25, 500);
